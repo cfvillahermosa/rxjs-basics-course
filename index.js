@@ -16,9 +16,11 @@ const observable = new Observable(subscriber => {
     subscriber.next('Hello');
     subscriber.next('World');
     subscriber.complete();
-    // once is completed no more values will be delivered
-    subscriber.next('Hello');
-    subscriber.next('World');
+
 });
 
-observable.subscribe(observer);
+observable.subscribe(value =>
+    console.log('next', value)
+    // null,
+    // () => console.log('complete!')
+);
