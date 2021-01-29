@@ -1,0 +1,5 @@
+1 - Observables are push based --> deliver data by invoking callbacks
+2 - Observables are cold (by default) --> Observables are not activated until you subscribe, each subscription then creates own execution path between the producer and consumer
+3 - Observables can emit multiple values --> each observable can emit zero to many values
+4 - Observables can deliver values both synchronous and asynchronously
+5 - Observables can be cancelled --> at any point the consumer can tell the producer not more by unsubscribing
