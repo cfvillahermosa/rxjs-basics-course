@@ -1,0 +1,4 @@
+1- of('string')
+2- from([1,2,3,4,5])
+3- fromEvent(document, 'click')
+4- interval(1000)
