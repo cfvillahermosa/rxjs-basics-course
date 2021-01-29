@@ -18,8 +18,6 @@ const observable = new Observable(subscriber => {
     // we delivers values asynchronously using set interval
     const id = setInterval(() => {
         subscriber.next(count);
-        if(count === 4)
-        subscriber.complete();
         count++;
     }, 1000);
 
@@ -30,6 +28,24 @@ const observable = new Observable(subscriber => {
     })
 });
 
-console.log('before');
-observable.subscribe(observer);
-console.log('after');
+const subscription = observable.subscribe(observer);
+const subscriptionTwo = observable.subscribe(observer);
+
+/*
+ * Subscriptions can be added together using the add method,
+ * you can then unsubscribe to multiple at the same time.
+ * This is simply personal preference, unsubscribing individually 
+ * will produce the same result. Also, in future lessons, we will see how
+ * to automate this unsubscribe process with operators.
+ */
+subscription.add(subscriptionTwo);
+
+setTimeout(() => {
+    /*
+     * Note: Calling unsubscribe will not fire your complete callback,
+     * but the returned function will be invoked cleaning up any
+     * resources that were created by the subscription - in this
+     * case the interval.
+     */
+    subscription.unsubscribe();
+}, 3500);
