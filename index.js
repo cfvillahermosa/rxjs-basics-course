@@ -1,51 +1,33 @@
-import { Observable } from 'rxjs';
-/**
- * Observers can register up to three callbacks to be invoked by the observable
- */
+import { fromEvent } from 'rxjs';
+
 const observer = {
-    next: value => console.log('next', value), // for successfully emitted values
-    error: error => console.log('error', error), // to forward any errors that can occur withing your observable execution
-    complete: () => console.log('complete!') // to be notified that no values will be deliver
+    next: val => console.log('next', val),
+    error: err => console.log('error', err),
+    complete: () => console.log('complete!')
 };
-/*
-* creates a new observable
-* observable constructor takes a function that receives a subscriber
-* subscriber is an enhanced version of the observer you supply when you subscribe in order to properly manage behavior like error handling and completion
-*/
-const observable = new Observable(subscriber => {
-    let count = 0;
-
-    // we delivers values asynchronously using set interval
-    const id = setInterval(() => {
-        subscriber.next(count);
-        count++;
-    }, 1000);
-
-    // then we return a function to clear the interval when observable completes, IMPORTANT: this section is only returned when observable completes
-    return (() => {
-        console.log('called');
-        clearInterval(id);
-    })
-});
-
-const subscription = observable.subscribe(observer);
-const subscriptionTwo = observable.subscribe(observer);
 
 /*
- * Subscriptions can be added together using the add method,
- * you can then unsubscribe to multiple at the same time.
- * This is simply personal preference, unsubscribing individually 
- * will produce the same result. Also, in future lessons, we will see how
- * to automate this unsubscribe process with operators.
+ *  Create streams from events, given target and event name.
  */
-subscription.add(subscriptionTwo);
+const source$ = fromEvent(document, 'keyup');
+
+/*
+ *  Each subscription creates it's own execution path between
+ *  observable and observer (also known as unicasting). So, in this case,
+ *  every subscription will wire up a new event listener.
+ */
+const subOne = source$.subscribe(observer);
+const subTwo = source$.subscribe(observer);
 
 setTimeout(() => {
     /*
-     * Note: Calling unsubscribe will not fire your complete callback,
-     * but the returned function will be invoked cleaning up any
-     * resources that were created by the subscription - in this
-     * case the interval.
+     *  For long running observables we need to make sure to clean
+     *  them up when we are finished to prevent memory leaks and
+     *  unintended behavior. In this case, we are cleaning up
+     *  one subscription but not the other, leaving it active.
+     *  We will learn different techniques to automate this
+     *  process in an upcoming lesson.
      */
-    subscription.unsubscribe();
-}, 3500);
+    console.log('unsubscribing');
+    subOne.unsubscribe();
+}, 3000);
