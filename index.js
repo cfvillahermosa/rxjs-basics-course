@@ -1,43 +1,25 @@
-import { fromEvent } from 'rxjs';
-import { map, mapTo, pluck } from 'rxjs/operators';
-
+import { fromEvent, of } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 of(1, 2, 3, 4, 5).pipe(
   /*
-   * map applies the function you provide on each emitted value,
-   * then emits the result.
+   * filter only emits values that pass the provided condition
    */
-  map(value => value * 10)
+  filter(value => value > 2)
 ).subscribe(console.log);
 
 const keyup$ = fromEvent(document, 'keyup');
 
-/*
- * One popular use case is mapping to a property (or multiple properties)
- * on an object. In this case you can use map like below...
- */
 const keycode$ = keyup$.pipe(
   map((event) => event.code)
 );
-
 /*
- * Or you could use pluck, which accepts the property name you
- * wish to emit. You can also 'pluck' nested properties, 
- * for instance: pluck('target', 'value'). I would use whichever
- * you feel is easiest to read (regarding map for single prop vs pluck).
+ * For instance, in this example I am using the stream
+ * of keycode events to create a stream of ONLY enter events
+ * using the filter operator.
  */
-const keycodeWithPluck$ = keyup$.pipe(
-  pluck('code')
+const enter$ = keycode$.pipe(
+  filter(code => code === 'Enter')
 );
 
-/*
- * For scenarios where you ALWAYS want to map to the same,
- * static value, you can use mapTo instead. This emits the value
- * you supply on any emissions from the source observable. We will see
- * a few examples of where this can be useful in upcoming lessons.
- */
-const pressed$ = keyup$.pipe(
-  mapTo('Key Pressed!')
-);
-
-keycodeWithPluck$.subscribe(console.log);
+enter$.subscribe(console.log);
